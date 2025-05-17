@@ -92,3 +92,9 @@ Manifests:
 agataogrodnik@Mac weather-appv2 % 
 ```
 
+
+```
+docker scout cves ghcr.io/agatogr/weather-appv2:latest --only-severity critical,high
+```
+<img width="840" alt="image" src="https://github.com/user-attachments/assets/58417816-0c63-45d5-9cd7-58a63a9cb38d" />
+
