@@ -41,6 +41,7 @@ docker buildx build \
   --push \
 
 ```
+<img width="952" alt="image" src="https://github.com/user-attachments/assets/0a06c335-bd9e-42a9-ab7c-d495a33f2f3f" />
 
 
 ```
