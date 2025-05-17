@@ -47,3 +47,8 @@ docker buildx build \
 ```
 cosign generate-key-pair
 ```
+
+
+```
+cosign sign --key cosign.key ghcr.io/agatogr/weather-appv2:latest
+```
