@@ -1,6 +1,6 @@
 # weather-appv2
 
-# Część nieobowiązkowa zadanie 1 (3. (max +80%))
+# Część nieobowiązkowa (3. (max +80%))
 
 ## Cel projeku
 
