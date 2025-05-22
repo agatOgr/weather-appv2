@@ -117,7 +117,7 @@ agataogrodnik@Mac weather-appv2 %
 docker scout cves ghcr.io/agatogr/weather-appv2:latest --only-severity critical,high
 ```
 
-Obraz został również przeskanowany za pomocą narzędzia Docker Scout pod kątem znanych podatności o wysokim i krytycznym poziomie zagrożenia (--only-severity critical,high). Analiza obrazu ghcr.io/agatogr/weather-appv2:latest dla platformy linux/arm64 wykazała, że żaden z 294 zainstalowanych pakietów nie zawierał znanych luk bezpieczeństwa. Oznacza to, że obraz jest aktualny i bezpieczny do użycia.
+Obraz został przeskanowany za pomocą narzędzia Docker Scout pod kątem znanych podatności o wysokim i krytycznym poziomie zagrożenia (--only-severity critical,high). Analiza obrazu ghcr.io/agatogr/weather-appv2:latest dla platformy linux/arm64 wykazała, że żaden z 294 zainstalowanych pakietów nie zawierał znanych luk bezpieczeństwa. Oznacza to, że obraz jest aktualny i bezpieczny do użycia.
 
 <img width="840" alt="image" src="https://github.com/user-attachments/assets/58417816-0c63-45d5-9cd7-58a63a9cb38d" />
 
