@@ -4,7 +4,7 @@
 
 ## Cel projeku
 
-Celem zadania było zbudowanie obrazu kontenera zgodnego z OCI, zawierającego aplikację opracowaną w części obowiązkowej projektu, z przeznaczeniem na platformy sprzętowe linux/amd64 oraz linux/arm64. Proces budowania miał wykorzystywać zaawansowane funkcje Docker BuildKit, w tym wsparcie dla mount ssh, mount secret, system cache oparty o rejestr (registry) oraz podpisywanie i weryfikację obrazu przy użyciu narzędzia cosign.
+Celem zadania było zbudowanie obrazu kontenera zgodnego z OCI, zawierającego aplikację opracowaną w części obowiązkowej projektu, z przeznaczeniem na platformy sprzętowe linux/amd64 oraz linux/arm64. Proces budowania miał wykorzystywać zaawansowane funkcje Docker BuildKit, w tym wsparcie dla mount ssh, mount secret, system cache oparty o rejestr (registry) oraz podpisywanie i weryfikację obrazu przy użyciu narzędzia cosign. Obraz został zweryfikowany pod kątem podatności z wykorzystaniem Docker Scout, ograniczając wyniki do luk o poziomie krytycznym i wysokim.
 
 ## Wykonane czynności
 
@@ -58,6 +58,7 @@ docker buildx build \
 ```
 <img width="952" alt="image" src="https://github.com/user-attachments/assets/0a06c335-bd9e-42a9-ab7c-d495a33f2f3f" />
 
+### Podpisanie obrazu za pomocą cosign
 
 ```
 cosign generate-key-pair
@@ -67,6 +68,7 @@ cosign generate-key-pair
 ```
 cosign sign --key cosign.key ghcr.io/agatogr/weather-appv2:latest
 ```
+### Weryfikacja podpisu cyfrowego obrazu
 
 ```
 cosign verify --key cosign.pub ghcr.io/agatogr/weather-appv2:latest
@@ -74,6 +76,9 @@ cosign verify --key cosign.pub ghcr.io/agatogr/weather-appv2:latest
 
 <img width="737" alt="image" src="https://github.com/user-attachments/assets/2c632c55-8d0d-43aa-97f7-7967c8774cfc" />
 
+### Inspekcja manifestu obrazu
+
+Potwierdzono obecność manifestów dla platform linux/amd64 oraz linux/arm64.
 
 ```
 % docker buildx imagetools inspect ghcr.io/agatogr/weather-appv2:latest
@@ -106,7 +111,7 @@ Manifests:
     vnd.docker.reference.type:   attestation-manifest
 agataogrodnik@Mac weather-appv2 % 
 ```
-
+### Skany bezpieczeństwa z użyciem Docker Scout
 
 ```
 docker scout cves ghcr.io/agatogr/weather-appv2:latest --only-severity critical,high
