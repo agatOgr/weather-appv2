@@ -1,5 +1,16 @@
 # weather-appv2
 
+# Część nieobowiązkowa zadanie 1 (3. (max +80%))
+
+## Cel projeku
+
+Celem zadania było zbudowanie obrazu kontenera zgodnego z OCI, zawierającego aplikację opracowaną w części obowiązkowej projektu, z przeznaczeniem na platformy sprzętowe linux/amd64 oraz linux/arm64. Proces budowania miał wykorzystywać zaawansowane funkcje Docker BuildKit, w tym wsparcie dla mount ssh, mount secret, system cache oparty o rejestr (registry) oraz podpisywanie i weryfikację obrazu przy użyciu narzędzia cosign.
+
+## Wykonane czynności
+
+### Generowanie klucza SSH i konfiguracja połączenia z GitHub
+
+Aby umożliwić pobranie kodu źródłowego z prywatnego repozytorium w trakcie budowania obrazu, wygenerowano parę kluczy SSH i dodano ją do agenta SSH:
 
 ```
 ssh-keygen -t ed25519 -C "agata.ogrodnik13@gmail.com"
@@ -16,6 +27,8 @@ ssh-add ~/.ssh/id_ed25519
 
 ```
 
+### Utworzenie własnego buildera docker buildx z obsługą kontenerów
+
 ```
 
 docker buildx create --name mybuilder --use --driver docker-container
@@ -23,13 +36,15 @@ docker buildx inspect --bootstrap
 
 
 ```
-
+### Logowanie do GitHub Container Registry (GHCR)
 
 ```
 echo TOKEN | docker login ghcr.io -u agatOgr --password-stdin
 
 
 ```
+
+### Budowa obrazu z użyciem buildx, cache i wsparciem dla wielu architektur
 
 ```
 docker buildx build \
