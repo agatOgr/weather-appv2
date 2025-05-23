@@ -121,3 +121,68 @@ Obraz został przeskanowany za pomocą narzędzia Docker Scout pod kątem znanyc
 
 <img width="840" alt="image" src="https://github.com/user-attachments/assets/58417816-0c63-45d5-9cd7-58a63a9cb38d" />
 
+
+## Plik Dockerfile
+
+```
+# Używamy rozszerzonego frontendu BuildKit (v1.4), aby móc korzystać z funkcji takich jak --mount=type=ssh
+# Dzięki temu możemy pobierać repozytorium prywatne przez SSH
+#syntax=docker/dockerfile:1.4
+
+# --- Etap 1: pobieranie repo przez SSH ---
+FROM alpine:latest AS fetch_repo
+
+# Ustawiamy katalog roboczy, w którym sklonujemy repozytorium
+WORKDIR /repo
+
+# Instalujemy Git oraz klienta SSH (potrzebne do pobierania repo z GitHuba przez SSH)
+RUN apk add --no-cache openssh-client git
+
+# Konfigurujemy zaufane hosty SSH, aby nie trzeba było potwierdzać połączenia z GitHubem
+RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+# Montujemy klucz SSH z zewnątrz i klonujemy repozytorium z aplikacją z GitHuba
+RUN --mount=type=ssh git clone --branch main git@github.com:agatOgr/weather-appv2.git .
+
+# --- Etap 2: budowanie aplikacji Node.js ---
+FROM node:22-alpine3.20 AS builder
+
+# Tworzymy katalog roboczy w obrazie buildera
+WORKDIR /app
+
+# Kopiujemy potrzebne pliki z wcześniej pobranego repozytorium
+COPY --from=fetch_repo /repo/package.json .
+COPY --from=fetch_repo /repo/package-lock.json .
+COPY --from=fetch_repo /repo/server.js .
+COPY --from=fetch_repo /repo/public ./public
+
+# Instalujemy zależności aplikacji
+RUN npm install
+
+# Instalujemy dodatkowy pakiet do uruchamiania procesów podrzędnych
+RUN npm install cross-spawn@7.0.5
+
+# --- Etap 3: finalny obraz aplikacji ---
+FROM node:22-alpine3.20
+
+# Dodajemy metadane (np. autor obrazu) zgodne ze specyfikacją OCI
+LABEL org.opencontainers.image.authors="Agata Ogrodnik <agata.ogrodnik13@gmail.com>"
+
+# Tworzymy katalog roboczy dla aplikacji w obrazie produkcyjnym
+WORKDIR /app
+
+# Kopiujemy zbudowaną aplikację z etapu buildera
+COPY --from=builder /app .
+
+# Otwieramy port 3000 (na którym nasłuchuje nasza aplikacja)
+EXPOSE 3000
+
+# Dodajemy prosty mechanizm sprawdzania stanu aplikacji (czy działa serwer HTTP)
+HEALTHCHECK --interval=5s --timeout=3s --start-period=3s --retries=2 \
+  CMD wget -q --spider http://localhost:3000/ || exit 1
+
+# Domyślne polecenie uruchamiające aplikację
+CMD ["node", "server.js"]
+
+```
+
